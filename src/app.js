@@ -3,10 +3,10 @@ require("dotenv").config();
 const { connectDB } = require("./config/database");
 
 const app = express();
+app.use(express.json());
 
-app.use("/", (req, res) => {
-  res.send("Mosh Store");
-});
+const authRoutes = require("./routes/authRoutes");
+app.use("/", authRoutes);
 
 connectDB()
   .then(() => {
@@ -16,5 +16,5 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.error("Database is not connected");
+    console.error(err, "Database is not connected");
   });
