@@ -5,8 +5,11 @@ const { connectDB } = require("./config/database");
 const app = express();
 app.use(express.json());
 
+const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
-app.use("/", authRoutes);
+
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
 
 connectDB()
   .then(() => {
