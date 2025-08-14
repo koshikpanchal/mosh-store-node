@@ -5,6 +5,7 @@ const {
 } = require("../validator/validator");
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const userRoutes = express.Router();
 
@@ -41,7 +42,7 @@ userRoutes.post("/signup", async (req, res) => {
 });
 
 //get the user information
-userRoutes.get("/:id", async (req, res) => {
+userRoutes.get("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -55,7 +56,8 @@ userRoutes.get("/:id", async (req, res) => {
   }
 });
 
-userRoutes.put("/:id", async (req, res) => {
+// update user information
+userRoutes.put("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
@@ -81,7 +83,8 @@ userRoutes.put("/:id", async (req, res) => {
   }
 });
 
-userRoutes.delete("/:id", async (req, res) => {
+// delete user
+userRoutes.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
 
