@@ -1,5 +1,8 @@
 const express = require("express");
-const { validateSignupData } = require("../validator/validator");
+const {
+  validateSignupData,
+  validateEditRequestData,
+} = require("../validator/validator");
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 
@@ -49,6 +52,32 @@ userRoutes.get("/:id", async (req, res) => {
     });
   } catch (error) {
     console.error("error in registering user", error);
+  }
+});
+
+userRoutes.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Validate the request data
+    if (!validateEditRequestData(req)) {
+      return res.status(400).json({ error: "Invalid request data" });
+    }
+
+    const loggedInUser = await User.findById(id);
+    Object.keys(updateData).forEach(
+      (key) => (loggedInUser[key] = updateData[key])
+    );
+
+    await loggedInUser.save();
+
+    res.json({
+      message: "User updated successfully",
+      data: loggedInUser,
+    });
+  } catch (error) {
+    console.error("error in updating user", error);
   }
 });
 

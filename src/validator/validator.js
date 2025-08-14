@@ -13,6 +13,13 @@ function validateSignupData(req) {
   }
 }
 
+function validateEditRequestData(req) {
+  const allowedFields = ["firstName", "lastName", "email"];
+
+  return Object.keys(req.body).every((field) => allowedFields.includes(field));
+}
+
 module.exports = {
   validateSignupData,
+  validateEditRequestData,
 };
