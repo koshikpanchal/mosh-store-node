@@ -81,4 +81,19 @@ userRoutes.put("/:id", async (req, res) => {
   }
 });
 
+userRoutes.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Delete the user
+    await User.findByIdAndDelete(id);
+
+    res.json({
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    console.error("error in deleting user", error);
+  }
+});
+
 module.exports = userRoutes;
