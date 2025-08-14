@@ -9,7 +9,6 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decodedUser = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    console.log("Decoded user:", decodedUser);
     req.user = decodedUser; // Attach user info to request object
     next();
   } catch (error) {
@@ -18,4 +17,14 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+const adminAuthMiddleware = (req, res, next) => {
+  const user = req.user;
+
+  if (!user || user.role !== "admin") {
+    return res.status(403).json({ error: "Access denied" });
+  }
+
+  next();
+};
+
+module.exports = { authMiddleware, adminAuthMiddleware };
