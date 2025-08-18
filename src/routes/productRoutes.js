@@ -45,6 +45,59 @@ productRoutes.post(
   }
 );
 
+// edit product details
+productRoutes.patch(
+  "/edit/:productId",
+  authMiddleware,
+  adminAuthMiddleware,
+  (req, res) => {
+    const { productId } = req.params;
+    const updateData = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ error: "Invalid productId" });
+    }
+
+    Product.findByIdAndUpdate(productId, updateData, { new: true })
+      .then((updatedProduct) => {
+        if (!updatedProduct) {
+          return res.status(404).json({ error: "Product not found" });
+        }
+        res.json({
+          message: "Product updated successfully",
+          product: updatedProduct,
+        });
+      })
+      .catch((error) => {
+        console.error("Error updating product", error);
+        res.status(500).json({ error: "Internal server error" });
+      });
+  }
+);
+
+//delete product
+productRoutes.delete(
+  "/delete/:productId",
+  authMiddleware,
+  adminAuthMiddleware,
+  async (req, res) => {
+    const { productId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ error: "Invalid productId" });
+    }
+    try {
+      const deletedProduct = await Product.findByIdAndDelete(productId);
+      if (!deletedProduct) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+      res.json({ message: "Product deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting product", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
 // Get all products by categoryId
 productRoutes.get("/by-category/:categoryId", async (req, res) => {
   try {
