@@ -10,7 +10,8 @@ authRoutes.post("/login", async (req, res) => {
 
     // fetching user from database
     const user = await User.findOne({ email: email });
-    if (await user.isValidPassword(password)) {
+
+    if (user && (await user.isValidPassword(password))) {
       const accessToken = await user.getAccessToken();
       const refreshToken = await user.getRefreshToken();
 
@@ -22,7 +23,7 @@ authRoutes.post("/login", async (req, res) => {
       });
       res.json({ token: accessToken });
     } else {
-      throw new Error("Invalid credentials");
+      res.status(401).json({ error: "Invalid credentials" });
     }
   } catch (error) {
     console.error("error in registering user", error);

@@ -29,36 +29,10 @@ cartRoutes.post("/add", authMiddleware, async (req, res) => {
       return res.status(400).json({ error: "ProductId is required" });
     }
 
-    // Find or create cart for the user
-    let cart = await Cart.findOne({ userId });
-    if (!cart) {
-      cart = new Cart({ userId, products: [], totalPrice: 0 });
-    }
+    const cart = await Cart.findOrCreateCart(userId);
 
-    // Check if product already exists in the cart
-    const existingProductIndex = cart.products.findIndex(
-      (item) => item.productId.toString() === productId.toString()
-    );
+    await cart.addProduct(productId);
 
-    if (existingProductIndex > -1) {
-      // Increment quantity if product already exists
-      cart.products[existingProductIndex].quantity += 1;
-    } else {
-      // Add new product to the cart with quantity 1
-      cart.products.push({ productId, quantity: 1 });
-    }
-
-    // Recalculate total price
-    let totalPrice = 0;
-    for (const item of cart.products) {
-      const product = await Product.findById(item.productId);
-      if (product) {
-        totalPrice += item.quantity * product.price;
-      }
-    }
-    cart.totalPrice = totalPrice;
-
-    // Save the cart
     await cart.save();
 
     res.status(201).json({ message: "Item added to cart successfully" });

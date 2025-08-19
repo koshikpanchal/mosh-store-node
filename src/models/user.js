@@ -69,7 +69,8 @@ userSchema.methods.getAccessToken = async function () {
     },
     process.env.JWT_SECRET_KEY,
     {
-      expiresIn: "15m",
+      // todo: change the expiration time to 15 minutes
+      expiresIn: "1d",
     }
   );
 
