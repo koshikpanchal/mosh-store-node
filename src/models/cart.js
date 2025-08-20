@@ -42,6 +42,19 @@ cartSchema.methods.addProduct = async function (productId) {
   this.totalPrice = await this.calculateTotalPrice();
 };
 
+cartSchema.methods.removeProduct = async function (productId) {
+  const productIndex = this.products.findIndex(
+    (item) => item.productId.toString() === productId.toString()
+  );
+
+  if (productIndex > -1) {
+    this.products.splice(productIndex, 1);
+    this.totalPrice = await this.calculateTotalPrice();
+  } else {
+    throw new Error("Product not found in cart");
+  }
+};
+
 // Method to calculate the total price of the cart
 cartSchema.methods.calculateTotalPrice = async function () {
   let totalPrice = 0;

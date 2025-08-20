@@ -1,6 +1,5 @@
 const express = require("express");
 const Cart = require("../models/cart");
-const Product = require("../models/product");
 const { authMiddleware } = require("../middleware/authMiddleware");
 
 const cartRoutes = express.Router();
@@ -38,6 +37,33 @@ cartRoutes.post("/add", authMiddleware, async (req, res) => {
     res.status(201).json({ message: "Item added to cart successfully" });
   } catch (error) {
     console.error("Error adding item to cart", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+cartRoutes.post("/remove", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id; // Get user ID from the authenticated request
+    const { productId } = req.body;
+
+    // Validate input data
+    if (!productId) {
+      return res.status(400).json({ error: "ProductId is required" });
+    }
+
+    const cart = await Cart.findOne({ userId });
+
+    if (!cart) {
+      return res.status(404).json({ error: "Cart not found" });
+    }
+
+    await cart.removeProduct(productId);
+
+    await cart.save();
+
+    res.status(200).json({ message: "Item removed from cart successfully" });
+  } catch (error) {
+    console.error("Error removing item from cart", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
