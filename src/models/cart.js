@@ -42,6 +42,7 @@ cartSchema.methods.addProduct = async function (productId) {
   this.totalPrice = await this.calculateTotalPrice();
 };
 
+// Method to remove a product from the cart
 cartSchema.methods.removeProduct = async function (productId) {
   const productIndex = this.products.findIndex(
     (item) => item.productId.toString() === productId.toString()
@@ -49,6 +50,24 @@ cartSchema.methods.removeProduct = async function (productId) {
 
   if (productIndex > -1) {
     this.products.splice(productIndex, 1);
+    this.totalPrice = await this.calculateTotalPrice();
+  } else {
+    throw new Error("Product not found in cart");
+  }
+};
+
+// Method to decrease the quantity of a product in the cart
+cartSchema.methods.decreaseProductQuantity = async function (productId) {
+  const productIndex = this.products.findIndex(
+    (item) => item.productId.toString() === productId.toString()
+  );
+
+  if (productIndex > -1) {
+    if (this.products[productIndex].quantity > 1) {
+      this.products[productIndex].quantity -= 1;
+    } else {
+      this.products.splice(productIndex, 1);
+    }
     this.totalPrice = await this.calculateTotalPrice();
   } else {
     throw new Error("Product not found in cart");
