@@ -21,13 +21,4 @@ app.use("/category", categoryRoutes);
 app.use("/cart", cartRoutes);
 app.use("/order", orderRoutes);
 
-connectDB()
-  .then(() => {
-    console.log("database is connected successfully");
-    app.listen(3000, () => {
-      console.log("listening on port 3000");
-    });
-  })
-  .catch((err) => {
-    console.error(err, "Database is not connected");
-  });
+module.exports = app;
